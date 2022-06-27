@@ -71,7 +71,7 @@ jobs:
     docker:
       - image: cimg/node:13.8.0
     steps:
-       - checkout
+      - checkout
       - restore_cache:
           keys: [frontend-deps]
       - run:
@@ -97,7 +97,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-deps
-          
+
 #   scan-frontend:
 #     docker:
 #       # Docker image here
