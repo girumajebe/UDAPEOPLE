@@ -338,8 +338,6 @@ configure-infrastructure:
 #               # your code here
 #             fi
             
-
-
 workflows:
   default:
     jobs:
