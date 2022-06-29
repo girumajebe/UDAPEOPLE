@@ -282,7 +282,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WOKFLOW_ID:0:7} --recursive
       
       - destroy-environment
-      - revert-migrations      
+     
                     
   deploy-backend:
     docker:
@@ -322,7 +322,7 @@ jobs:
             cat .inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
-      - revert-migrations
+ 
 
 #   smoke-test:
 #     docker:
