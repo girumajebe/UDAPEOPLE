@@ -270,74 +270,72 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:13.14.0
     steps:
       - checkout
-      - install_awscli
-      - install_nodejs
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            npm install
+      - restore_cache:
+          keys:
+            - build-frontend
+      - dependencies
       - run:
           name: Get backend url
           command: |
-            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WOKFLOW_ID:0:7}" \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text)
-            echo "API_URL=http://${BACKEND_Public_IP}:3030" >> frontend/.env
-            cat frontend/.env
+             BACKEND_IP=$(aws cloudformation describe-stacks --stack-name udapeople-backend-"${CIRCLE_WORKFLOW_ID:0:7}" --query "Stacks[0].Outputs[0].OutputValue" --output text)
+             API_URL="http://${BACKEND_IP}:3030"
+             echo "API_URL=${API_URL}" >> frontend/.env
       - run:
           name: Deploy frontend objects
+          working_directory: ./frontend
           command: |
-            cd frontend
+            npm i
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WOKFLOW_ID:0:7} --recursive
+            aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
       
       - destroy-environment
       - revert-migrations
      
                     
-  deploy-backend:
+  deploy-backend:    
     docker:
-      - image: cimg/base:stable
+      - image: python:3.7-alpine3.11
+        environment:
+          NODE_ENV: "production"
+          VERSION: "1"
+          ENVIRONMENT: "production"
+          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+          TYPEORM_HOST: $TYPEORM_HOST
+          TYPEORM_USERNAME: $TYPEORM_USERNAME
+          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+          TYPEORM_DATABASE: $TYPEORM_DATABASE
+          TYPEORM_PORT: $TYPEORM_PORT
+          TYPEORM_ENTITIES: $TYPEORM_ENTITIES  
+
     steps:
       - checkout
-      - install_awscli
-      - install_ansible
-      - install_nodejs
+
       - add_ssh_keys:
           fingerprints: ["93:63:db:c0:1b:e9:19:aa:72:7a:60:58:de:0e:f2:cb"]
-      - attach_workspace:
-          at: ~/ 
+      - attach_workspace: 
+          at: ~/
       - restore_cache:
-          keys: [backend-deps]
+          keys:
+            - build-backend
       - run:
           name: Install dependencies
           command: |
-            cd backend
-            npm install
-      - run:
-          name: Package Backend
-          command:
-            cd backend
-            npm run build
-            tar -czf artifact.tar.gz dist/* package*
-
-            cd .. 
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files 
+            apk add --update ansible nodejs npm tar gzip
       - run:
           name: Deploy backend
           command: |
-            export TYPEORM_MIGRATIONS_DIR=./migrations
-            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-            export TYPEORM_MIGRATIONS=./migrations/*.ts
-            cd .circleci/ansible
-            cat .inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
+              cd backend
+              npm install
+              npm run build
+              cd ..
+              tar -C backend -czvf artifact.tar.gz .
+              cat ~/project/.circleci/ansible/inventory.txt
+              ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+        
       - destroy-environment
       - revert-migrations
  
