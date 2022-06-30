@@ -276,7 +276,7 @@ jobs:
       - restore_cache:
           keys:
             - build-frontend
-      - dependencies
+      
       - run:
           name: Get backend url
           command: |
