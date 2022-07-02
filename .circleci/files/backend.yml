@@ -33,3 +33,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
+        - Key: project
+          Value : Udapeople
+
+  InstanceEIP: 
+    Taype: AWS::EC2::EIP 
+    properties:
+      Domain: vpc
+      InstanceId: !Ref EC@Instance
+
