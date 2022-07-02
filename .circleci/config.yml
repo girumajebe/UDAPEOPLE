@@ -51,21 +51,19 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    parameters:
-      Workflow_ID:
-        type: string 
-        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+  parameters:
+      workflow_id:
+        type: string
     steps:
       - run:
-          name: Revert migrations
+          name: Reverting migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure http://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
-            if(( $SUCCESS==1 )); 
-            then
-              cd ~/project/backend
+            SUCCESS=$(curl "https://kvdb.io/W3GZH3U8i2Z9vZ3LTLFRWP//migration_<<parameters.workflow_id>>" -H "X-Api-Key: ${THISDB_API_KEY}")
+            if (($SUCCESS == 1)); then
+              cd backend
               npm install
-              npm run migration:revert
+              npm run migrations:revert
             fi
             
 jobs:
@@ -219,26 +217,39 @@ jobs:
       - destroy-environment
 
   run-migrations:
-    docker:
-      - image: cimg/node:13.8.0
+
+        docker:
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
-      - install_awscli
+      - restore_cache:
+          keys:
+            - build-backend
       - run:
-          no_output_timeout: 30m
           name: Run migrations
           command: |
             cd backend
-            npm install
+            cat .env
+            npm i
+            npm run build
             npm run migrations > migrations_dump.txt
-      - run:
+            cat migrations_dump.txt
           no_output_timeout: 30m
-          name: Send migration status to kvdb.io
+            
+      - run:
+          name: Sending migration status to kvdb
           command: |
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully"  ./backend/migrations_dump.txt   
             then
-              curl http://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
-            fi 
+              curl https://kvdb.io/W3GZH3U8i2Z9vZ3LTLFRWP//migration_${CIRCLE_WORKFLOW_ID:0:7} \
+                -H "X-Api-Key: ${THISDB_API_KEY}" \
+                -d "1"
+            else
+              curl https://kvdb.io/W3GZH3U8i2Z9vZ3LTLFRWP//migration_${CIRCLE_WORKFLOW_ID:0:7} \
+                -H "X-Api-Key: ${THISDB_API_KEY}" \
+                -d "0"
+            fi
+          no_output_timeout: 30m
       - destroy-environment
       - revert-migrations
      # Here's where you will add some code to rollback on failure      
