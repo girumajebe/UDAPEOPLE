@@ -59,6 +59,7 @@ commands:
 
     steps:
       - run:
+          no_output_timeout: 30m
           name: Reverting migrations
           when: on_fail
           command: |
@@ -73,7 +74,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -90,7 +91,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -107,7 +108,7 @@ jobs:
 
   test-frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -121,7 +122,7 @@ jobs:
 
   test-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -135,7 +136,7 @@ jobs:
             
   scan-frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -150,7 +151,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - restore_cache:
@@ -166,7 +167,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2022.06
     steps:
       - checkout
       - install_awscli
@@ -207,7 +208,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2022.06
     steps:
       - checkout
       - install_ansible
@@ -225,7 +226,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:18.4.0
     steps:
       - checkout
       - install_awscli
@@ -239,18 +240,20 @@ jobs:
             cat migrations_dump.txt
             
       - run:
+          no_output_timeout: 30m
           name: Sending migration status to kvdb
           command: |
             if grep -q "has been executed successfully"  ./backend/migrations_dump.txt   
             then
-              curl https://kvdb.io/BeqhT7zRQ2gwasvvYbatzb//migration_${CIRCLE_WORKFLOW_ID:0:7} \
+              curl https://kvdb.io/W3GZH3U8i2Z9vZ3LTLFRWP//migration_${CIRCLE_WORKFLOW_ID:0:7} \
                 -H "X-Api-Key: ${THISDB_API_KEY}" \
                 -d "1"
             else
-              curl https://kvdb.io/BeqhT7zRQ2gwasvvYbatzb//migration_${CIRCLE_WORKFLOW_ID:0:7} \
+              curl https://kvdb.io/W3GZH3U8i2Z9vZ3LTLFRWP//migration_${CIRCLE_WORKFLOW_ID:0:7} \
                 -H "X-Api-Key: ${THISDB_API_KEY}" \
                 -d "0"
             fi
+
       - destroy-environment
       - revert-migrations
      # Here's where you will add some code to rollback on failure      
