@@ -335,8 +335,8 @@ jobs:
       - revert-migrations
        
 
-#   smoke-test:
-#     docker:
+  smoke-test:
+    docker:
       - image: cimg/base:stable
     steps:
       - checkout
