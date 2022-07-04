@@ -256,7 +256,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2022.06
     steps:
       - checkout
       - install_awscli
@@ -282,6 +282,7 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WOKFLOW_ID:0:7} --recursive
+          no_output_timeout: 30m
       
       - destroy-environment
       - revert-migrations
@@ -324,6 +325,7 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             cat ~/project/.circleci/ansible/inventory.txt
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+          no_output_timeout: 30m
       - destroy-environment
       - revert-migrations
        
