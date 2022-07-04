@@ -341,7 +341,6 @@ jobs:
             pip install awscli
       - run:
           name: Deploy backend
-          no_output_timeout: 30m
           command: |
             pwd            
             tar -C backend -czvf backend_artifact.tar.gz .
