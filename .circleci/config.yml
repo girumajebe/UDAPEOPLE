@@ -282,9 +282,6 @@ jobs:
       - image: cimg/node:13.14.0
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - build-frontend
       - dependencies
       - run:
           name: Get backend url
