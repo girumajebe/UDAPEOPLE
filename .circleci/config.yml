@@ -334,10 +334,13 @@ jobs:
       - restore_cache:
           keys: ["backend-dist"]  # -<< pipeline.id >>
       - run:
-          name: Deploy backend
+          name: Package Backend
           command: |
-            cd /home
-            tar czf backend.tar.gz -P /home/circleci/project/backend/dist
+            cd backend
+            npm run build
+            tar -czf artifact.tar.gz dist/* package*
+            cd ..
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend 2
           command: |
