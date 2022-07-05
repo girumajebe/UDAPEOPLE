@@ -331,7 +331,8 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-  docker:
+  smoke-test:
+    docker:
       # Lightweight Docker image
       - image: python:3.7-alpine3.11
     steps:
@@ -356,6 +357,9 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${API_URL}"
             curl ${API_URL}
+            
+      - destroy-environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
