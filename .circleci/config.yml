@@ -167,7 +167,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2022.06
     steps:
       - checkout
       - install_awscli
@@ -179,6 +179,7 @@ jobs:
               --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+          no_output_timeout: 30m
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -188,6 +189,7 @@ jobs:
               --tags project=udapeople \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+          no_output_timeout: 30m
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -198,6 +200,7 @@ jobs:
               --output text)
             echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
+          no_output_timeout: 30m
 
       - persist_to_workspace:
           root: ~/
