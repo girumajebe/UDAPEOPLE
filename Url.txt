@@ -1,5 +1,5 @@
 https://github.com/girumajebe/UDAPEOPLE
 http://udapeople-f67bb6d.s3-website-us-east-1.amazonaws.com
 https://d2myldv8gabhn9.cloudfront.net/#/employees
-http://ec2-44-208-130-170.compute-1.amazonaws.com/
+https://52.21.247.191/ec2-52-21-247-191.compute-1.amazonaws.com
 https://ec2-35-171-6-137.comec2-35-171-6-137.compute-1.amazonaws.compute-1.amazonaws.com/ls
