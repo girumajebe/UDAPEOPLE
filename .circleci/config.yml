@@ -364,8 +364,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install curl
-            sudo apt install python3-pycurl
-            pip install --upgrade --user awscli<1.18
+         
       - run:
           name: Backend smoke test
           command: |
