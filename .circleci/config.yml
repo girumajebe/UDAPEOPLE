@@ -314,15 +314,15 @@ jobs:
 
   deploy-backend:
     docker:
-    - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - run: apk add --update tar gzip curl
+    - image: cimg/base:2022.06
     # steps:
     #   - checkout
-    #   - install_awscli
-    #   - install_ansible
-    #   - install_nodejs
+    #   - run: apk add --update tar gzip curl
+    steps:
+      - checkout
+      - install_awscli
+      - install_ansible
+      - install_nodejs
       - add_ssh_keys:
           fingerprints: ["93:63:db:c0:1b:e9:19:aa:72:7a:60:58:de:0e:f2:cb"]
       - attach_workspace:
@@ -354,11 +354,11 @@ jobs:
       #       cat inventory.txt
       #       ansible-playbook -i inventory.txt deploy-backend.yml
       
-      - run:
-          name: Install Ansible
-          command: |
-            apk add ansible nodejs npm
-            pip install awscli
+      # - run:
+      #     name: Install Ansible
+      #     command: |
+      #       apk add ansible nodejs npm
+      #       pip install awscli
       - run:
           name: Create the  .env file
           command: |
@@ -391,6 +391,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+          no_output_timeout: 30m
 
       - destroy-environment
       - revert-migrations
