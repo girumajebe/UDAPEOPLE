@@ -16,7 +16,9 @@
 #     npm i
 
 - name: "Executing Node app with PM2"
+  become: yes
   shell: |
+    chmod a+rwx ~/backend-app
     cd ~/backend-app
     npm install 
     pm2 stop default
