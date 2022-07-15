@@ -1,5 +1,5 @@
 URL 01 - https://github.com/girumajebe/UDAPEOPLE
-URL 02 - http://udapeople-f67bb6d.s3-website-us-east-1.amazonaws.com
-URL 03 - https://d2myldv8gabhn9.cloudfront.net/#/employees
-URL 04 - https://52.21.247.191/ec2-52-21-247-191.compute-1.amazonaws.com
-URL 05 -https://ec2-35-171-6-137.comec2-35-171-6-137.compute-1.amazonaws.compute-1.amazonaws.com/ls
+URL 02 - http://udapeople-98d2b31.s3-website-us-east-1.amazonaws.com/#/employees
+URL 03 - https://d2myldv8gabhn9.cloudfront.net
+URL 04 - http://44.209.61.19:3030/api/status
+URL 05 - http://44.203.73.90:9090/
